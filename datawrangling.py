@@ -338,7 +338,7 @@ class stackedDF():
     #-------
     
     def rearrange(self, index_label = None, store = False, setdate = False,
-                  resample = True, rule = '1MS', *, dateargs = None, pivotargs = None):
+                  resample = True, rule = '1MS', *, dateargs = dict(), pivotargs = dict()):
         """
         Rearranges the stackedDF to obtain a simpler date/code dataframe
 

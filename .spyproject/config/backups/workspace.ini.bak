@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = empty-project-type
-recent_files = ['data\\PTUA2022\\original\\PTUA2022_single_acquifer\\wrangle_PTUA2022.py']
+recent_files = ['..\\Users\\paolo\\.spyder-py3\\temp.py', 'datawrangling.py', 'database_unification\\DBU-COMPLETE.py', 'database_unification\\DBU-steps\\DBU-1.py', 'database_unification\\DBU-steps\\DBU-2.py', 'database_unification\\DBU-steps\\DBU-3.py', 'database_unification\\DBU-steps\\DBU-5.py', 'database_unification\\DBU-steps\\DBU-4.py', 'database_unification\\DBU-steps\\DBU-6.py', 'database_unification\\struct-datasets\\PTUA2003_struct.py', 'database_unification\\struct-datasets\\Milano1950_struct.py']
 
 [main]
 version = 0.2.0
