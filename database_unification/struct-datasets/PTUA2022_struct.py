@@ -17,24 +17,29 @@ import pandas as pd
 # %% Obtain a monthly dataset of the total head for each piezometer
 
 #Load the basin's piezometer dataset
-fname = 'data/PTUA2022/original/IT03GWBISSAPTA.csv'
+fname = 'data/PTUA2022/original/piezometria_ISS.csv'
 df = pd.read_csv(fname)
 #Set the data format
-df['DATA'] = pd.to_datetime(df['DATA'], format = '%d/%m/%Y')
+df['DATA'] = pd.to_datetime(df['DATA'], format = '%Y-%m-%d')
 #Define a date/piezometer database
 head = df.pivot(index = 'DATA', columns = 'CODICE PUNTO', values = 'PIEZOMETRIA [m s.l.m.]')
 #Set the database to monthly
 head = head.resample("1MS").mean()
 
-head.to_csv('data/PTUA2022/head_IT03GWBISSAPTA.csv')
+head.to_csv('data/PTUA2022/head_PTUA2022.csv')
 
 # %% Obtain the piezometer metadata of the GW basin considered 
 
 #Load the full metadata dataset
-meta = pd.read_csv('data/PTUA2022/metadata_piezometri_ISS.csv')
+meta = pd.read_csv('data/PTUA2022/original/CSV-RETE ACQUE SOTTERRANEE_ANAGRAFICA COMPLETA.csv')
+meta.dropna(subset = 'PROVINCIA', inplace = True)
+meta.drop(columns = ['Area GWB', 'DATA FINE'], inplace = True)
 meta['ORIGINE'] = 'PTUA2022'
 #correct "DATA_INIZIO"
 meta['DATA_INIZIO'] = [head[col].first_valid_index() if col in head.columns else np.nan for col in meta['CODICE']]
+
+#replace n.d. with nan
+#replace da definire con nan
 
 meta.to_csv('data/PTUA2022/meta_PTUA2022.csv', index = False)
 
@@ -51,10 +56,14 @@ import datawrangling as dw
 #     print(s, e)
 #     s = e + 1
 
+headhead.columns[np.invert(head.columns.isin(meta['CODICE']))]
+
 head = head.loc[:, head.columns.isin(meta['CODICE'])]
 head.columns = dw.enum_instances(meta.set_index('CODICE').loc[head.columns, 'COMUNE'], ['MILANO', 'MONZA', 'CERNUSCO LOMBARDONE', 'SESTO SAN GIOVANNI'])
 dv.interactive_TS_visualization(head, 'date', 'total head', markers = True, file = 'plot/db/original_TS_IT03GWBISSAPTA.html',
                                 title = 'Database di partenza - Origine: PTUA2022')
+
+meta.loc[meta['CODICE'] == 'PO0200150R0002', :]
 
 # %% Visualize histogram
 

@@ -28,7 +28,19 @@ for path in lst:
             acquifer = path.split('/')[-1].split('.')[0].split('_')[0]
     sheet.to_csv(f"data/PTUA2022/original/PTUA2022_single_acquifer_csv/{acquifer}.csv")
 
+# %% Unify all the head data
 
-# pulire i csv: togliere le colonne in più
-#metterli nel formato per ts ma mantenere anche i metadati
-# così è possibile confrontare con metadai_ISS
+lst = glob.glob('data/PTUA2022/original/PTUA2022_single_acquifer_csv/*.csv')
+lst = [path.replace('\\', '/') for path in lst]
+lst = [x for x in lst if 'ISS' in (x)]
+
+cols = ['CODICE PUNTO', 'DATA','PIEZOMETRIA [m s.l.m.]']
+df = pd.DataFrame()
+
+for path in lst:
+    tool = pd.read_csv(path)
+    tool = tool[cols]
+    df = pd.concat([df, tool])
+
+df.to_csv('data/PTUA2022/original/piezometria_ISS.csv', index = False)
+
