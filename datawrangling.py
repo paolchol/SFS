@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Functions for data wrangling.
-As data wrangling I mean:
+Some functionalities:
     - operations on the datasets such as merge and concat
     - rows or columns removals
 
@@ -44,9 +44,9 @@ def joincolumns(df, keep = '_x', fillwith = '_y', col_order = None):
         else:
             newcol = col.split('_')[0]
         pos = df.loc[:, col].isna()
-        df.loc[pos, col] = df.loc[pos, f'{newcol}{fillwith}']
-        df.drop(columns = f'{newcol}{fillwith}', inplace = True)
-        df.rename(columns = {f'{col}': f'{newcol}'}, inplace = True)
+        df.loc[pos, col] = df.loc[pos, f"{newcol}{fillwith}"]
+        df.drop(columns = f"{newcol}{fillwith}", inplace = True)
+        df.rename(columns = {f"{col}": f"{newcol}"}, inplace = True)
     if col_order is not None: df = df[col_order]
     return df
 

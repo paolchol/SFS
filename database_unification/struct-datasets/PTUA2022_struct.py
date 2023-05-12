@@ -26,7 +26,7 @@ head = df.pivot(index = 'DATA', columns = 'CODICE PUNTO', values = 'PIEZOMETRIA 
 #Set the database to monthly
 head = head.resample("1MS").mean()
 
-head.to_csv('data/PTUA2022/head_PTUA2022.csv')
+head.to_csv('data/PTUA2022/head_PTUA2022_ISS.csv')
 
 # %% Obtain the piezometer metadata of the GW basin considered 
 
@@ -36,7 +36,8 @@ meta.dropna(subset = 'PROVINCIA', inplace = True)
 meta.drop(columns = ['Area GWB', 'DATA_FINE'], inplace = True)
 meta['ORIGINE'] = 'PTUA2022'
 #correct "DATA_INIZIO"
-meta['DATA_INIZIO'] = [head[col].first_valid_index() if col in head.columns else np.nan for col in meta['CODICE']]
+meta['DATA_INIZO'] = [head[col].first_valid_index() if col in head.columns else np.nan for col in meta['CODICE']]
+meta.rename(columns = {'DATA_INIZO': 'DATA_INIZIO'}, inplace = True)
 
 meta[meta == 'n.d.'] = np.nan
 meta[meta == 'da definire'] = np.nan
@@ -44,6 +45,8 @@ meta[meta == 'da definire'] = np.nan
 meta.drop_duplicates('CODICE', 'first', inplace = True)
 
 meta.to_csv('data/PTUA2022/meta_PTUA2022.csv', index = False)
+metaiss = meta.loc[meta['Codice WISE Corpo idrico'].isin(list(dict.fromkeys([x for x in meta['Codice WISE Corpo idrico'] if 'ISS' in str(x)]))), :]
+metaiss.to_csv('data/PTUA2022/meta_PTUA2022_ISS.csv', index = False)
 
 # %% Visualize the time series
 
@@ -64,7 +67,6 @@ head = head[sorted(head.columns)]
 
 dv.interactive_TS_visualization(head, 'date', 'total head', markers = True, file = 'plot/db/original_TS_PTUA2022.html',
                                 title = 'Database di partenza - Origine: PTUA2022')
-
 
 # %% Visualize histogram
 
