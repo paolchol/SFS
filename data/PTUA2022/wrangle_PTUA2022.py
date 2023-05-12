@@ -35,6 +35,9 @@ lst = [path.replace('\\', '/') for path in lst]
 lst = [x for x in lst if 'ISS' in (x)]
 
 cols = ['CODICE PUNTO', 'DATA','PIEZOMETRIA [m s.l.m.]']
+
+#aggiungi soggiacenza
+
 df = pd.DataFrame()
 
 for path in lst:
@@ -42,5 +45,5 @@ for path in lst:
     tool = tool[cols]
     df = pd.concat([df, tool])
 
-df.to_csv('data/PTUA2022/original/piezometria_ISS.csv', index = False)
+df.dropna().to_csv('data/PTUA2022/original/piezometria_ISS.csv', index = False)
 

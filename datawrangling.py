@@ -242,8 +242,15 @@ def enum_instances(lst, check = None, start = 1):
     
     if check is None:
         #trova i duplicati in lst e crea una lista di valori con duplicati
-        pass
-    
+        
+        newlist = [] # empty list to hold unique elements from the list
+        check = [] # empty list to hold the duplicate elements from the list
+        for i in lst:
+            if i not in newlist:
+                newlist.append(i)
+            else:
+                check.append(i)
+    check = list(dict.fromkeys(check))
     for c in check:
         start = st[0]
         for lab in lst:

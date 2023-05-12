@@ -33,13 +33,15 @@ head.to_csv('data/PTUA2022/head_PTUA2022.csv')
 #Load the full metadata dataset
 meta = pd.read_csv('data/PTUA2022/original/CSV-RETE ACQUE SOTTERRANEE_ANAGRAFICA COMPLETA.csv')
 meta.dropna(subset = 'PROVINCIA', inplace = True)
-meta.drop(columns = ['Area GWB', 'DATA FINE'], inplace = True)
+meta.drop(columns = ['Area GWB', 'DATA_FINE'], inplace = True)
 meta['ORIGINE'] = 'PTUA2022'
 #correct "DATA_INIZIO"
 meta['DATA_INIZIO'] = [head[col].first_valid_index() if col in head.columns else np.nan for col in meta['CODICE']]
 
-#replace n.d. with nan
-#replace da definire con nan
+meta[meta == 'n.d.'] = np.nan
+meta[meta == 'da definire'] = np.nan
+#remove duplicated codes, keep first to maintain the ones wiht RETE = 1
+meta.drop_duplicates('CODICE', 'first', inplace = True)
 
 meta.to_csv('data/PTUA2022/meta_PTUA2022.csv', index = False)
 
@@ -56,14 +58,13 @@ import datawrangling as dw
 #     print(s, e)
 #     s = e + 1
 
-headhead.columns[np.invert(head.columns.isin(meta['CODICE']))]
-
 head = head.loc[:, head.columns.isin(meta['CODICE'])]
-head.columns = dw.enum_instances(meta.set_index('CODICE').loc[head.columns, 'COMUNE'], ['MILANO', 'MONZA', 'CERNUSCO LOMBARDONE', 'SESTO SAN GIOVANNI'])
-dv.interactive_TS_visualization(head, 'date', 'total head', markers = True, file = 'plot/db/original_TS_IT03GWBISSAPTA.html',
+head.columns = dw.enum_instances(meta.set_index('CODICE').loc[head.columns, 'COMUNE'])
+head = head[sorted(head.columns)]
+
+dv.interactive_TS_visualization(head, 'date', 'total head', markers = True, file = 'plot/db/original_TS_PTUA2022.html',
                                 title = 'Database di partenza - Origine: PTUA2022')
 
-meta.loc[meta['CODICE'] == 'PO0200150R0002', :]
 
 # %% Visualize histogram
 
