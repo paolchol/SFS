@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 import datawrangling as dw
 
-# %% Controllo sui fogli presenti in LAU REG ticiadd.xls
+# %% Load fogli LauraReg addogl
 
 og1 = pd.read_csv('data/PTUA2003/original/addogl/LauraReg addogl_Arpa 2001 2002.csv')
 og2 = pd.read_csv('data/PTUA2003/original/addogl/LauraReg addogl_Adda Oglio.csv')
@@ -18,11 +18,11 @@ og3 = pd.read_csv('data/PTUA2003/original/addogl/LauraReg addogl_Adda Oglio vecc
 # %% og1
 
 df1 = og1.copy()
-df1['COMUNE - DENOMINAZIONE'] = [x.split('-')[0].rstrip() for x in og1['COMUNE - DENOMINAZIONE']]
-df1.insert(2, 'DENOMINAZIONE', [x.split('-')[1] if len(x.split('-')) > 1 else np.nan for x in og1['COMUNE - DENOMINAZIONE']])
+df1['COMUNE - DENOMINAZIONE'] = [x.split('-')[0].rstrip().upper() for x in og1['COMUNE - DENOMINAZIONE']]
+df1.insert(2, 'DENOMINAZIONE', [' '.join(x.split('-')[1:]).lstrip() if len(x.split('-')) > 1 else np.nan for x in og1['COMUNE - DENOMINAZIONE']])
 df1.rename(columns = {'COMUNE - DENOMINAZIONE': 'COMUNE', "LOCALITA'": 'LOCALITA'}, inplace = True)
 df1.insert(0, 'CODICETOOL', [''.join([str(x),str(y)]) for x,y in zip(df1['COMUNE'], df1['CODICE'])])
-df1.set_index('CODICE', inplace = True)
+df1.set_index('CODICETOOL', inplace = True)
 df1 = df1[~df1.index.duplicated(keep='first')]
 
 df1.info()
@@ -37,11 +37,11 @@ ts1.set_index(pd.date_range('2001-01-01', '2002-12-01', freq = 'MS'), inplace = 
 # %% og2
 
 df2 = og2.copy()
-df2['COMUNE - DENOMINAZIONE'] = [x.split('-')[0].rstrip() for x in og2['COMUNE - DENOMINAZIONE']]
-df2.insert(2, 'DENOMINAZIONE', [x.split('-')[1] if len(x.split('-')) > 1 else np.nan for x in og2['COMUNE - DENOMINAZIONE']])
+df2['COMUNE - DENOMINAZIONE'] = [x.split('-')[0].rstrip().upper() for x in og2['COMUNE - DENOMINAZIONE']]
+df2.insert(2, 'DENOMINAZIONE', [' '.join(x.split('-')[1:]).lstrip() if len(x.split('-')) > 1 else np.nan for x in og2['COMUNE - DENOMINAZIONE']])
 df2.rename(columns = {'COMUNE - DENOMINAZIONE': 'COMUNE', "LOCALITA'": 'LOCALITA'}, inplace = True)
 df2.insert(0, 'CODICETOOL', [''.join([str(x),str(y)]) for x,y in zip(df2['COMUNE'], df2['CODICE'])])
-df2.set_index('CODICE', inplace = True)
+df2.set_index('CODICETOOL', inplace = True)
 df2 = df2[~df2.index.duplicated(keep='first')]
 
 cols = df2.columns.to_list()
@@ -70,12 +70,22 @@ ts3.index = nw
 
 # %% merge metadata
 
+meta1.reset_index().set_index('CODICE', inplace = True)
+meta2.reset_index().set_index('CODICE', inplace = True)
 meta = dw.joincolumns(meta1.merge(meta2, left_index = True, right_index = True, how = 'outer'))
 
-# aggiornare MILANO comune
-# aggiornare mortara comune
-# aggiornare codice tool
+#identify rows with numbers in "comune"
+ns = [f'{x}' for x in range(10)]
+lst = []
+for n in ns:
+    lst += [meta['COMUNE'].str.contains(n)]
+#keep only the municipality name in "comune" and put the number in "denominazione"
+for idx in lst:
+    meta.loc[idx.values, 'DENOMINAZIONE'] = [f"{y} - {' '.join(x.split()[-1])}" if y==y else ' '.join(x.split()[-1]) for x,y in zip(meta.loc[idx.values, 'COMUNE'], meta['DENOMINAZIONE']) ]
+    meta.loc[idx.values, 'COMUNE'] = [' '.join(x.split()[:-1]) for x in meta.loc[idx.values, 'COMUNE']]
 
+meta['CODICETOOL'] = [''.join([str(x),str(y)]) for x,y in zip(meta['COMUNE'], meta['CODICE'])]
+ 
 # %% merge time series
 
 ts3.columns = [x.upper() for x in ts3.columns]
