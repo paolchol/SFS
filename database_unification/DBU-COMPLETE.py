@@ -49,9 +49,9 @@ def identify_couples_codes(codes_SIF_PP, metaDBU, meta, xcol, ycol):
 
 # %% Load and clean the original dataset (PTUA2022)
 
-metaDBU = pd.read_csv('data/PTUA2022/meta_PTUA2022.csv', index_col = 'CODICE')
+metaDBU = pd.read_csv('data/PTUA2022/meta_PTUA2022_ISS.csv', index_col = 'CODICE')
 # - Set QUOTA_MISU equal to QUOTA_PC_S if missing
-metaDBU.loc[metaDBU['QUOTA_MISU'] == 0, 'QUOTA_MISU'] = metaDBU.loc[metaDBU['QUOTA_MISU'] == 0, 'QUOTA_PC_S']
+metaDBU.loc[metaDBU['QUOTA_MISURA_SLM (Qr)'] == 0, 'QUOTA_MISURA_SLM (Qr)'] = metaDBU.loc[metaDBU['QUOTA_MISURA_SLM (Qr)'] == 0, 'QUOTA_PC_SLM']
 #drop remaining points with no z field associated
 metaDBU.drop(index = metaDBU.loc[metaDBU['QUOTA_MISU'] == 0, :].index, inplace = True)
 

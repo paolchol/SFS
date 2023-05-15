@@ -172,8 +172,8 @@ ts1.index.names = ['DATA']
 
 #Aggiunta colonna ORIGINE
 meta1['ORIGINE'] = 'PTUA2003'
-meta1.to_csv('data/PTUA2003/meta_PTUA2003_TICINOADDA_meta1.csv')
-ts1.to_csv('data/PTUA2003/head_PTUA2003_TICINOADDA_ts1.csv')
+meta1.to_csv('data/PTUA2003/wrangled/ticinoadda/meta_PTUA2003_TICINOADDA_meta1.csv')
+ts1.to_csv('data/PTUA2003/wrangled/ticinoadda/head_PTUA2003_TICINOADDA_ts1.csv')
 
 # %% Operazioni sui dataset completi
 
