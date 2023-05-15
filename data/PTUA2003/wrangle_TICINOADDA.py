@@ -169,6 +169,7 @@ meta1.index = [f'0{code}' if (len(code)>6) and (code[0] != 'P') else code for co
 meta1.index.names = ['CODICE']
 ts1.columns = [f'0{code}' if (len(code)>6) and (code[0] != 'P') else code for code in ts1.columns]
 ts1.index.names = ['DATA']
+meta1['CODICETOOL'] = [''.join([str(x),str(y)]) for x,y in zip(meta1['COMUNE'], meta1.index)]
 
 #Aggiunta colonna ORIGINE
 meta1['ORIGINE'] = 'PTUA2003'
