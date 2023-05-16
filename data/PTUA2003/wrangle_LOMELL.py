@@ -34,7 +34,7 @@ for idx in lst:
 df1['CODICE'] = [f'0{code}' if (len(str(code))>6) and (code[0] != 'P') else code for code in df1['CODICE']]
 #generate a custom unique code for the merge
 df1.insert(0, 'CODICETOOL', [''.join([str(x),str(y)]) for x,y in zip(df1['COMUNE'], df1['CODICE'])])
-df1.loc[df1['CODICETOOL'] == '', 'CODICETOOL'] = df1.loc[df1['CODICETOOL'] == '', 'COMUNE']
+df1.loc[df1['CODICE'].isna(), 'CODICETOOL'] = df1.loc[df1['CODICE'].isna(), 'COMUNE']
 df1.set_index('CODICETOOL', inplace = True)
 df1 = df1[~df1.index.duplicated(keep='first')]
 
@@ -64,7 +64,7 @@ for idx in lst:
 df2['CODICE'] = [f'0{code}' if (len(str(code))>6) and (code[0] != 'P') else code for code in df2['CODICE']]
 #generate a custom unique code for the merge
 df2.insert(0, 'CODICETOOL', [''.join(''.join([str(x),str(y)]).split('.')[:-1]) for x,y in zip(df2['COMUNE'], df2['CODICE'])])
-df2.loc[df2['CODICETOOL'] == '', 'CODICETOOL'] = df2.loc[df2['CODICETOOL'] == '', 'COMUNE']
+df2.loc[df2['CODICE'].isna(), 'CODICETOOL'] = df2.loc[df2['CODICE'].isna(), 'COMUNE']
 df2.set_index('CODICETOOL', inplace = True)
 df2 = df2[~df2.index.duplicated(keep='first')]
 
@@ -115,4 +115,4 @@ ts.index.names = ['DATA']
 # %% save
 
 meta.to_csv('data/PTUA2003/wrangled/lomell/meta_PTUA2003_LOMELL.csv')
-ts.to_csv('data/PTUA20037/wrangled/lomell/head_PTUA2003_LOMELL.csv')
+ts.to_csv('data/PTUA2003/wrangled/lomell/head_PTUA2003_LOMELL.csv')

@@ -46,11 +46,49 @@ mrg = dw.join_twocols(mrg, cols = ['Y', 'y'])
 mrg = dw.join_twocols(mrg, cols = ['PROV', 'PROVINCIA'])
 mrg = dw.join_twocols(mrg, cols = ['NOTE', 'INFO'])
 
+#%% Clean
+
+#complete origine column
 mrg['ORIGINE'] = 'PTUA2003'
 
-test = mrg.loc[mrg['CODICE'].duplicated(False), :]
-seldrop = [] #fare elenco manuale di CODICETOOL da rimuovere
-test.drop(seldrop)
+#check duplicates
+# test = mrg.loc[mrg['CODICE'].duplicated(False), :]
+seldrop = [
+    'CORREZZANA0150920003',
+    'RONCO BRIANTINO0151870001',
+    'SAN DONATO0151920005',
+    'S.GIULIANO0151950015',
+    'TREZZANO S/N0152210001',
+    "CAVENAGO D'ADDA0980170003",
+    "CAVENAGO D'ADDA0980170064",
+    "CERVIGNANO D'ADDA0980180001",
+    "SAN ROCCO AL PORTO0980490001",
+    "SANT'ANGELO LODIGIANO0980500005",
+    'VIGAVANO47'
+    ]
+#drop duplicates
+mrg.drop(mrg.loc[mrg['CODICETOOL'].isin(seldrop), :].index, inplace = True)
+
+replace = [
+ ['COREZZANA0150920003', 'CORREZZANA', 'CORREZZANA0150920003'],
+ ['RONCO BR.0151870001', 'RONCO BRIANTINO', 'RONCO BRIANTINO0151870001'],
+ ['SAN  DONATO0151920005', 'SAN DONATO', 'SAN DONATO0151920005'],
+ ['S.GIULIANO0151950015', 'SAN GIULIANO', 'SAN GIULIANO0151950015'],
+ ['CAVENAGO ADDA0980170064', "CAVENAGO D'ADDA", "CAVENAGO D'ADDA0980170064"],
+ ['CAVENAGO ADDA0980170003', "CAVENAGO D'ADDA", "CAVENAGO D'ADDA0980170003"],
+ ['CERVIGNANO A.0980180001', "CERVIGNANO D'ADDA", "CERVIGNANO D'ADDA0980180001"],
+ ['S.ROCCO AL PORTO0980490001', 'SAN ROCCO AL PORTO', 'SAN ROCCO AL PORTO0980490001'],
+ ['S.ANGELO LODIGIANO0980500005', "SANT'ANGELO LODIGIANO", "SANT'ANGELO LODIGIANO0980500005"],
+ ['MASATE0codice_mancante_1', 'MASATE', 'MASATE']
+ ]
+for r in replace:
+    mrg.loc[mrg['CODICETOOL'] == r[0], 'COMUNE'] = r[1]
+    mrg.loc[mrg['CODICETOOL'] == r[0], 'CODICETOOL'] = r[2]
+
+mrg.loc[mrg['CODICETOOL'] == 'MASATE', 'CODICE'] = np.nan
+
+#set codice column as string
+mrg['CODICE'] = [str(int(x)) if x ==x and isinstance(x, float) else x for x in mrg['CODICE']]
 
 # %% Select
 
@@ -59,9 +97,45 @@ mrg['FALDA'].unique()
 sel = ['1', 'SUPERF. (acquifero locale)', 'SUPERF.', 'MISTA', 'MISTA 1/2', 1.0]
 mrgsel = mrg.loc[mrg['FALDA'].isin(sel), :]
 
+# %% Clean head4
+
+head4.columns = meta4.reset_index().set_index('CODICE').loc[head4.columns, 'CODICETOOL']
+
 # %% Merge ts
 
 hmrg = dw.joincolumns((head1.merge(head2, left_index = True, right_index = True, how = 'outer')))
 hmrg = dw.joincolumns((hmrg.merge(head3, left_index = True, right_index = True, how = 'outer')))
-hmrg = dw.joincolumns((hmrg.merge(head4, left_index = True, right_index = True, how = 'outer'))) #codicetool
+hmrg = dw.joincolumns((hmrg.merge(head4, left_index = True, right_index = True, how = 'outer')))
+
+# %% Clean
+
+mergecols = [
+ ['COREZZANA0150920003', 'CORREZZANA', 'CORREZZANA0150920003'],
+ ['RONCO BR.0151870001', 'RONCO BRIANTINO', 'RONCO BRIANTINO0151870001'],
+ ['SAN  DONATO0151920005', 'SAN DONATO', 'SAN DONATO0151920005'],
+ ['S.GIULIANO0151950015', 'SAN GIULIANO', 'SAN GIULIANO0151950015'],
+ ['CAVENAGO ADDA0980170064', "CAVENAGO D'ADDA", "CAVENAGO D'ADDA0980170064"],
+ ['CAVENAGO ADDA0980170003', "CAVENAGO D'ADDA", "CAVENAGO D'ADDA0980170003"],
+ ['CERVIGNANO A.0980180001', "CERVIGNANO D'ADDA", "CERVIGNANO D'ADDA0980180001"],
+ ['S.ROCCO AL PORTO0980490001', 'SAN ROCCO AL PORTO', 'SAN ROCCO AL PORTO0980490001'],
+ ['S.ANGELO LODIGIANO0980500005', "SANT'ANGELO LODIGIANO", "SANT'ANGELO LODIGIANO0980500005"],
+ ['VIGAVANO47', '', 'VIGEVANO47'],
+ ['TREZZANO S/N0152210001', '', 'TREZZANO SUL NAVIGLIO0152210001',]
+ ]
+
+hmrg.rename(columns = {'MASATE0codice_mancante_1': 'MASATE'}, inplace = True)
+
+for r in mergecols:
+    hmrg = dw.join_twocols(hmrg, cols = [r[2], r[0]])
+
+hmrgsel = hmrg[mrgsel['CODICETOOL']]    
+
+# %% Save
+
+mrg.to_csv(os.path.join(folder, 'meta_PTUA2003.csv'))
+hmrg.to_csv(os.path.join(folder, 'head_PTUA2003.csv'))
+
+mrgsel.to_csv(os.path.join(folder, 'meta_PTUA2003_FALDA1.csv'))
+hmrgsel.to_csv(os.path.join(folder, 'head_PTUA2003_FALDA1.csv'))
+
 

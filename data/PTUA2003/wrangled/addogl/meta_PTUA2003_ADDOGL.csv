@@ -165,7 +165,7 @@ MARIANO COMENSE16,CO,MARIANO COMENSE,Pozzo 3   Pragma S.P.A,16,Via per Novedrate
 MARIANO COMENSE20,CO,MARIANO COMENSE,Soc. Pragma S.P.A   Trotti Grande,20,Via S. d'Acquisto,1514310.0,5060568.0,255.0,,X,3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 MARIANO COMENSE5 bis,CO,MARIANO COMENSE,Pragma S.P.A,5 bis,Via S. D'Acquisto,1514310.0,5060568.0,255.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 MARTINENGO0161330158,BG,MARTINENGO,Stamperia di Martinengo S.r.l.,0161330158,"via Pinetti, 44",1559095.0,5046594.0,150.7,,,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-MEDEnan,PV,MEDE,ASM - 3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+MEDE,PV,MEDE,ASM - 3,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 MEDIGLIA0151390001,MI - Città,MEDIGLIA,,0151390001,Via Stephenson,1526616.0,5028755.0,96.36,,X,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 MERATEPC097048001,LC,MERATE,,PC097048001,REGONDINO,1531012.0,5061302.0,266.0,,X,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 MEZZAGO0151450001,MI,MEZZAGO,,0151450001,via Unione,1534736.001,5052942.997,220.39,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -211,8 +211,8 @@ PALOSCO0161573380,BG,PALOSCO,Valtulini Giacomo,0161573380,C.na Gritti,1564511.0,
 PANTIGLIATE0151670001,MI - Città,PANTIGLIATE,,0151670001,via D'Annunzio,1527170.0,5032050.0,97.39,,,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 PAVIA4,PV,PAVIA,40,4,Campeggi 1,1510910.0,5006400.0,82.6,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 PAVONE DEL MELLA26,BS,PAVONE DEL MELLA,ASM,26,VIA GIOVANNI XXIII,1594740.0,5016924.0,54.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+PESCAROLO,CR,PESCAROLO,4,,Loc. Palestra,1593527.875,5005190.5,45.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 PESCAROLO019069.0003,CR,PESCAROLO,3,019069.0003,Loc. Palestra,1593492.0,5005268.5,45.0,,X,3,167.0,192.0,167.0,192.0,,,,,,,,,,,,,,,,,,,,,,,,,,,192.5
-PESCAROLOnan,CR,PESCAROLO,4,,Loc. Palestra,1593527.875,5005190.5,45.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 PESCHIERA BORROMEO0151710197,MI - Città,PESCHIERA BORROMEO,,0151710197,FEM Mezzate,1522946.0,5032854.0,105.61,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 PIADENA019071.0003,CR,PIADENA,,019071.0003,via Bassa,1607835.25,4998399.5,34.0,,X,3,158.5,172.0,158.5,172.0,,,,,,,,,,,,,,,,,,,,,,,,,,,181.5
 PIEVE FISSIRAGA0980450001,LO,PIEVE FISSIRAGA,CAP            ,0980450001,C.na S.Antonio,1535548.0,5013741.0,72.89,,X,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
