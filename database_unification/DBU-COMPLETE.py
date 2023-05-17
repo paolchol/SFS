@@ -23,7 +23,8 @@ code_db = pd.read_csv('data/general/codes_SIF_PP.csv')
 
 # %% Tool functions
 
-def identify_couples_codes(codes_SIF_PP, metaDBU, meta, xcol, ycol):
+def identify_couples_codes(codes_SIF_PP, metaDBU, meta, xcol, ycol,
+                           id1 = 'CODICE'):
     #Search by code
     sifpp = codes_SIF_PP.loc[codes_SIF_PP['CODICE_SIF'].isin(meta.index), ['CODICE_SIF', 'CODICE_PP']]
     sifpp.set_index('CODICE_SIF', inplace = True)
@@ -31,45 +32,63 @@ def identify_couples_codes(codes_SIF_PP, metaDBU, meta, xcol, ycol):
     #Search by position
     #Transform meta's coordinates: from Monte Mario to WGS84
     meta['lat'], meta['lon'] = gd.transf_CRS(meta.loc[:, xcol], meta.loc[:, ycol], 'EPSG:3003', 'EPSG:4326', series = True)
+    #Find the nearest point
     db_nrst = gd.find_nearestpoint(meta, metaDBU,
-                         id1 = 'CODICE', coord1 = ['lon', 'lat'],
+                         id1 = id1, coord1 = ['lon', 'lat'],
                          id2 = 'CODICE', coord2 = ['lon', 'lat'],
                          reset_index = True)
     #Select the points with distance less than 100 meters
     db_nrst = db_nrst[db_nrst['dist'] < 100]
 
     #Merge the two code lists
-    codelst = pd.merge(sifpp, db_nrst.loc[:, ['CODICE', 'CODICE_nrst']], how = 'outer', left_index = True, right_on = 'CODICE')
+    codelst = pd.merge(sifpp, db_nrst.loc[:, [id1, 'CODICE_nrst']], how = 'outer', left_index = True, right_on = id1)
     codelst.reset_index(inplace = True, drop = True)
     codelst.loc[np.invert(codelst['CODICE_nrst'].isna()), 'CODICE_PP'] = codelst.loc[np.invert(codelst['CODICE_nrst'].isna()), 'CODICE_nrst']
     codelst.drop(columns = 'CODICE_nrst', inplace = True)
-    codelst.rename(columns = {'CODICE': 'CODICE_SIF', 'CODICE_PP': 'CODICE_link'}, inplace = True)
+    codelst.rename(columns = {id1: 'CODICE_SIF', 'CODICE_PP': 'CODICE_link'}, inplace = True)
     codelst.set_index('CODICE_SIF', inplace = True)
-    return codelst
+    return codelst, db_nrst
 
 # %% Load and clean the original dataset (PTUA2022)
 
 metaDBU = pd.read_csv('data/PTUA2022/meta_PTUA2022_ISS.csv', index_col = 'CODICE')
+# Rename QUOTA_MISU
+metaDBU.rename(columns = {'QUOTA_MISURA_SLM (Qr)': 'QUOTA_MISU'}, inplace = True)
 # - Set QUOTA_MISU equal to QUOTA_PC_S if missing
-metaDBU.loc[metaDBU['QUOTA_MISURA_SLM (Qr)'] == 0, 'QUOTA_MISURA_SLM (Qr)'] = metaDBU.loc[metaDBU['QUOTA_MISURA_SLM (Qr)'] == 0, 'QUOTA_PC_SLM']
+idx = (metaDBU['QUOTA_MISU'] == 0) | metaDBU['QUOTA_MISU'].isna()
+metaDBU.loc[idx, 'QUOTA_MISU'] = metaDBU.loc[idx, 'QUOTA_PC_SLM']
 #drop remaining points with no z field associated
-metaDBU.drop(index = metaDBU.loc[metaDBU['QUOTA_MISU'] == 0, :].index, inplace = True)
+idx = (metaDBU['QUOTA_MISU'] == 0) | metaDBU['QUOTA_MISU'].isna()
+metaDBU.drop(index = metaDBU.loc[idx, :].index, inplace = True)
+# obtain latitude and longitude
+metaDBU['lat'], metaDBU['lon'] = gd.transf_CRS(metaDBU.loc[:, 'X_WGS84'], metaDBU.loc[:, 'Y_WGS84'], 'EPSG:32632', 'EPSG:4326', series = True)
 
 # %% DBU-1
 #PTUA2003
 
-meta = pd.read_csv('data/PTUA2003/meta_PTUA2003_TICINOADDA_meta1.csv', index_col = 'CODICE')
+meta = pd.read_csv('data/PTUA2003/wrangled/meta_PTUA2003_FALDA1_QGIS.csv', index_col = 'CODICE')
 
-metaDBU['lat'], metaDBU['lon'] = gd.transf_CRS(metaDBU.loc[:, 'X_WGS84'], metaDBU.loc[:, 'Y_WGS84'], 'EPSG:32632', 'EPSG:4326', series = True)
+meta.index = [f'0{code}' if (len(str(code))>6) and (code[0] != 'P') else code for code in meta.index]
+meta.index.names = ['CODICE']
 
-codelst = identify_couples_codes(code_db, metaDBU, meta, 'x', 'y')
+codelst, test = identify_couples_codes(code_db, metaDBU, meta, 'X', 'Y', id1 = 'CODICETOOL')
+sum(metaDBU.index.isin(test['CODICE_nrst']))
+
+meta.reset_index(drop = False, inplace = True)
+meta.set_index('CODICETOOL', inplace = True)
 
 metamerge = dw.mergemeta(metaDBU, meta, link = codelst,
                          firstmerge = dict(left_index = True, right_index = True),
                          secondmerge = dict(left_index = True, right_on = 'CODICE_link',
                                             suffixes = [None, "_PTUA2003"]))
-metamerge.rename(columns = {'CODICE_link': 'CODICE'}, inplace = True)
+metamerge.rename(columns = {'CODICE': 'CODICE_SIF'}, inplace = True) #CODICE arriva da PTUA2003 ora
+metamerge.rename(columns = {'CODICE_link': 'CODICE'}, inplace = True) #CODICE_linkè il link corretto
 metamerge.set_index('CODICE', inplace = True)
+
+dw.print_colN(metamerge)
+
+metamerge.drop(columns = metamerge.columns[51:71], inplace = True)
+
 metamerge.drop(columns = ['SETTORE', 'STRAT.', 'PROVINCIA_PTUA2003', 'x', 'y', 'COMUNE_PTUA2003', 'lat_PTUA2003', 'lon_PTUA2003'], inplace = True)
 metamerge.rename(columns = {'z': 'z_PTUA2003', 'INFO': 'INFO_PTUA2003', 'index': 'CODICE_SIF'}, inplace = True)
 metamerge = dw.join_twocols(metamerge, cols = ['ORIGINE', 'ORIGINE_PTUA2003'], onlyna = False, add = True)
@@ -84,7 +103,7 @@ codes = metamerge.loc[metamerge['BACINO_WISE'] == 'IT03GWBISSAPTA', 'CODICE_SIF'
 # codes = pd.concat([codes, metamerge.loc[metamerge['BACINO_WISE'] == 'IT03GWBISSAPTA', 'CODICE_SIF'].dropna()])
 headmerge, rprtmerge = dw.mergets(headDBU, head, codes, report = True, tag = 'PTUA2003')
 
-headcorr = da.correct_quota(meta, head, metamerge, codes, quotacols = ['z', 'QUOTA_MISU'])
+headcorr = da.correct_quota(meta, head, metamerge, codes, quotacols = ['Q', 'QUOTA_MISU'])
 hmrgcorr = dw.mergets(headDBU, headcorr, codes)
 
 # %% DBU-2
