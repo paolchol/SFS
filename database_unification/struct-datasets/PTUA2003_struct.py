@@ -120,7 +120,7 @@ mergecols = [
  ['S.ROCCO AL PORTO0980490001', 'SAN ROCCO AL PORTO', 'SAN ROCCO AL PORTO0980490001'],
  ['S.ANGELO LODIGIANO0980500005', "SANT'ANGELO LODIGIANO", "SANT'ANGELO LODIGIANO0980500005"],
  ['VIGAVANO47', '', 'VIGEVANO47'],
- ['TREZZANO S/N0152210001', '', 'TREZZANO SUL NAVIGLIO0152210001',]
+ ['TREZZANO S/N0152210001', '', 'TREZZANO SUL NAVIGLIO0152210001']
  ]
 
 hmrg.rename(columns = {'MASATE0codice_mancante_1': 'MASATE'}, inplace = True)
@@ -128,14 +128,14 @@ hmrg.rename(columns = {'MASATE0codice_mancante_1': 'MASATE'}, inplace = True)
 for r in mergecols:
     hmrg = dw.join_twocols(hmrg, cols = [r[2], r[0]])
 
-hmrgsel = hmrg[mrgsel['CODICETOOL']]    
+hmrgsel = hmrg[mrgsel['CODICETOOL']]
 
 # %% Save
 
-mrg.to_csv(os.path.join(folder, 'meta_PTUA2003.csv'))
+mrg.to_csv(os.path.join(folder, 'meta_PTUA2003.csv'), index = False)
 hmrg.to_csv(os.path.join(folder, 'head_PTUA2003.csv'))
 
-mrgsel.to_csv(os.path.join(folder, 'meta_PTUA2003_FALDA1.csv'))
+mrgsel.to_csv(os.path.join(folder, 'meta_PTUA2003_FALDA1.csv'), index = False)
 hmrgsel.to_csv(os.path.join(folder, 'head_PTUA2003_FALDA1.csv'))
 
 
