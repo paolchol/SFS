@@ -107,9 +107,11 @@ dv.interactive_TS_visualization(head[sel], markers = True,
 # %% Update metamerge
 
 #export meta
-sel = da.ts_sel_date(head, leftout.index, delta = 20*365)
+# sel = da.ts_sel_date(head, leftout.index, delta = 20*365)
+# leftout.loc[sel, :].to_csv('data/CAP/DBU-2_tojoin.csv')
 leftout.loc[sel, :].to_csv('data/CAP/DBU-2_tojoin.csv')
 #join in QGIS with the basin
+
 #load and insert needed informations
 to_insert = pd.read_csv('data/CAP/DBU-2_joinQGIS_PROV.csv')
 to_insert['CODICE'] = [f"0{int(idx)}" if not np.isnan(idx) else np.nan for idx in to_insert['CODICE']]
