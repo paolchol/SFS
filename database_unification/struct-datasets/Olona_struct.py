@@ -65,9 +65,8 @@ head.to_csv('data/Olona/head_Olona.csv')
 
 # %% Filter the metadata based on "FALDA" field
 
-meta['FALDA'].describe()
 meta['FALDA'].value_counts()
-idx = meta.loc[:, 'FALDA'].isin(['1', 'SUPERF.', 'SUPERF. (acquifero locale)'])
+idx = meta.loc[:, 'FALDA'].isin(['1', 'SUPERF.', 'SUPERF. (acquifero locale)', 'MISTA'])
 meta = meta.loc[idx, :]
 
 meta.to_csv('data/Olona/meta_Olona_filtered.csv')
