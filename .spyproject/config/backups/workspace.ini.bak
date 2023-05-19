@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = empty-project-type
-recent_files = ['datawrangling.py', 'data\\PTUA2003\\wrangle_ADDOGL.py', 'data\\PTUA2003\\wrangle_LOMELL.py', 'data\\PTUA2003\\wrangle_OGLMINC.py', 'data\\PTUA2003\\wrangle_TICINOADDA.py', 'database_unification\\DBU-COMPLETE.py', 'database_unification\\struct-datasets\\PTUA2003_struct.py']
+recent_files = ['datawrangling.py', 'database_unification\\DBU-COMPLETE.py', 'database_unification\\struct-datasets\\CAP_struct.py', 'database_unification\\DBU-steps\\DBU-2.py', 'dataanalysis.py']
 
 [main]
 version = 0.2.0

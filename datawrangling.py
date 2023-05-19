@@ -455,8 +455,8 @@ class arrange_metats():
     #Methods
     #-------
     
-    def to_webgis(self, anfields, ancouples, pzfields, pzcouples, idcol,
-                  ids = None, stacklab = None):
+    def to_webgis(self, anfields, ancouples, pzfields = None, pzcouples = None, idcol = None,
+                  ids = None, stacklab = None, onlymeta = False):
         """
         Returns the database in a format which can be uploaded in a WebGIS
 
@@ -493,22 +493,24 @@ class arrange_metats():
         if ids is not None:
             an[ids[0]] = [x for x in range(1, an.shape[0]+1)]
         # dpz - Piezometric data
-        dpz = self.ts.stack().reset_index(drop = False)
-        if stacklab is not None:
-            dpz.columns = stacklab
-        dump = self.meta.loc[self.meta[self.id].isin(self.ts.columns), :].copy()
-        dump.reset_index(drop = True, inplace = True)
-        tool = pd.DataFrame(np.zeros((dump.shape[0],len(pzfields))), columns = pzfields)
-        tool[:] = np.nan
-        for tag in pzcouples:
-            tool[tag] = dump[pzcouples[tag]]
-        if ids is not None:
-            tool[ids[1]] = an.loc[an[idcol].isin(tool[idcol]), ids[0]].values        
-        dpz = joincolumns(pd.merge(dpz, tool, how = 'right', left_on = idcol, right_on = idcol))
-        if ids is not None:
-            dpz[ids[0]] = [x for x in range(1, dpz.shape[0]+1)]
-        dpz = dpz[pzfields]
-        return an, dpz
+        if not onlymeta:
+            dpz = self.ts.stack().reset_index(drop = False)
+            if stacklab is not None:
+                dpz.columns = stacklab
+            dump = self.meta.loc[self.meta[self.id].isin(self.ts.columns), :].copy()
+            dump.reset_index(drop = True, inplace = True)
+            tool = pd.DataFrame(np.zeros((dump.shape[0],len(pzfields))), columns = pzfields)
+            tool[:] = np.nan
+            for tag in pzcouples:
+                tool[tag] = dump[pzcouples[tag]]
+            if ids is not None:
+                tool[ids[1]] = an.loc[an[idcol].isin(tool[idcol]), ids[0]].values        
+            dpz = joincolumns(pd.merge(dpz, tool, how = 'right', left_on = idcol, right_on = idcol))
+            if ids is not None:
+                dpz[ids[0]] = [x for x in range(1, dpz.shape[0]+1)]
+            dpz = dpz[pzfields]
+            return an, dpz
+        return an
     
     def to_stackeDF(self):
         #transform to a format passable to the class stackeDF
