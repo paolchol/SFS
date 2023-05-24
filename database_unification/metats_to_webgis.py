@@ -34,13 +34,15 @@ metacouples = {
     'tipo_punto': 'TIPO',
     'istat_comune': 'COMUNE',
     'istat_prov': 'PROVINCIA',
-    'x_sr2': 'X',
-    'y_sr2': 'Y',
+    'x_sr1': 'X_GB',
+    'y_sr1': 'Y_GB',
+    'x_sr2': 'X_WGS84',
+    'y_sr2': 'Y_WGS84',
     'quota_testa_tubo': 'QUOTA_MISU',
-    'quota_piano_campagna': 'QUOTA_PC_S',
+    'quota_piano_campagna': 'QUOTA_PC_SLM',
     'fonte': 'ORIGINE',
-    'bacino_idro': 'BACINO_WISE',
-    'note': 'INFO'   
+    'bacino_idro': 'Codice WISE Corpo idrico',
+    'note': 'NOTE'
     }
 #dizionario, associa alle etichette anfields etichette in meta
 #se una etichetta di anfields non è presente, lasciare la colonna in anagrafica vuota
@@ -64,23 +66,23 @@ an, dpz = j.to_webgis(metafields, metacouples, tsfields, tscouples, 'id_punto',
 #dati da inserire a posteriori
 #anagrafica
 # - x_sr1, y_sr1
-an['x_sr1'], an['y_sr1'] = gd.transf_CRS(an['x_sr2'], an['y_sr2'], 'EPSG:32632', 'EPSG:3003', series = True)
+# an['x_sr1'], an['y_sr1'] = gd.transf_CRS(an['x_sr2'], an['y_sr2'], 'EPSG:32632', 'EPSG:3003', series = True)
 
 #dati_piez
 # - secco
 # - riferimento_soggiacenza
 dpz['secco'] = 'no'
-dpz['riferimento_soggiacenza'] = 'non noto'
+# dpz['riferimento_soggiacenza'] = 'non noto'
 
 #serie storiche corrette
 jcorr = dw.arrange_metats(meta, headcorr, 'CODICE')
 _, dpzcorr = jcorr.to_webgis(metafields, metacouples, tsfields, tscouples,
                              'id_punto', ['gid', 'fkid'], stacklab)
 dpzcorr['secco'] = 'no'
-dpzcorr['riferimento_soggiacenza'] = 'non noto'
+# dpzcorr['riferimento_soggiacenza'] = 'non noto'
 
 # %% Esporta
 
-an.to_csv('data/results/webgis/anagrafica_punti.csv', index = False)
-dpz.to_csv('data/results/webgis/dati_piez_nonusare.csv', index = False)
-dpzcorr.to_csv('data/results/webgis/dati_piez.csv', index = False)
+an.to_csv('data/results/db-unification/webgis/anagrafica_punti.csv', index = False)
+dpz.to_csv('data/results/db-unification/webgis/dati_piez_nonusare.csv', index = False)
+dpzcorr.to_csv('data/results/db-unification/webgis/dati_piez.csv', index = False)
