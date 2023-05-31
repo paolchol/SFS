@@ -68,6 +68,9 @@ metaDBU['lat'], metaDBU['lon'] = gd.transf_CRS(metaDBU.loc[:, 'X_WGS84'], metaDB
 # load time series
 headDBU = pd.read_csv('data/PTUA2022/head_PTUA2022_ISS.csv', index_col='DATA', parse_dates = True)
 
+metaDBU = metaDBU.loc[metaDBU.index.isin(headDBU.columns), :]
+headDBU = headDBU.loc[:, headDBU.columns.isin(metaDBU.index)]
+
 # %% DBU-1
 #PTUA2003
 
@@ -139,13 +142,13 @@ head = pd.read_csv('data/CAP/head_CAP.csv', index_col = 'DATA')
 head.index = pd.DatetimeIndex(head.index)
 
 codelst, db_nrst = identify_couples_codes(code_db, metamerge, meta, 'X', 'Y', retdist = True)
-u, c = np.unique(codelst.values, return_counts=True)
-dup = u[c > 1]
-check = min(db_nrst.loc[db_nrst['CODICE_nrst'] == dup[0], 'dist'])
-idx = db_nrst.loc[(db_nrst['CODICE_nrst'] == dup[0]) & (db_nrst['dist'] == check), 'CODICE'].values[0]
-tool = codelst[(codelst.values == dup[0])]
-tool = tool[tool.index != idx].index
-codelst.drop(tool, inplace = True)
+# u, c = np.unique(codelst.values, return_counts=True)
+# dup = u[c > 1]
+# check = min(db_nrst.loc[db_nrst['CODICE_nrst'] == dup[0], 'dist'])
+# idx = db_nrst.loc[(db_nrst['CODICE_nrst'] == dup[0]) & (db_nrst['dist'] == check), 'CODICE'].values[0]
+# tool = codelst[(codelst.values == dup[0])]
+# tool = tool[tool.index != idx].index
+# codelst.drop(tool, inplace = True)
 
 metamerge = dw.mergemeta(metamerge, meta, link = codelst,
                     firstmerge = dict(left_index = True, right_index = True),
@@ -333,10 +336,10 @@ to_insert['X'], to_insert['Y'] = gd.transf_CRS(to_insert.loc[:, 'Coord_X'], to_i
 to_insert.rename(columns = {'COD_PTUA16': 'Codice WISE Corpo idrico',
                             'CODICE': 'CODICE_SIF',
                             'PIEZOMETRO': 'CODICE_FOG',
-                            'Coord_X': 'X_WGS84',
-                            'Coord_Y': 'Y_WGS84',
-                            'X': 'X_GB',
-                            'Y': 'Y_GB',
+                            'Coord_X': 'X_GB',
+                            'Coord_Y': 'Y_GB',
+                            'X': 'X_WGS84',
+                            'Y': 'Y_WGS84',
                             'RIFERIMENTO': 'QUOTA_MISU',
                             }, inplace = True)
 to_insert['z_Milano1950'] = to_insert['QUOTA_MISU']
@@ -523,7 +526,7 @@ print(f"Incremento medio di dati: {round(abs(sum(delta)/len(delta))/365, 2)} ann
 
 # %% Export
 
-metamerge.to_csv('data/results/db-unification/meta_DBU-COMPLETE.csv')
-headmerge.to_csv('data/results/db-unification/head_DBU-COMPLETE.csv')
-rprtmerge.to_csv('data/results/db-unification/report_merge_DBU-COMPLETE.csv')
-hmrgcorr.to_csv(('data/results/db-unification/headcorr_DBU-COMPLETE.csv'))
+metamerge.to_csv('data/results/db-unification/meta_DBU-COMPLETE-sel.csv')
+headmerge.to_csv('data/results/db-unification/head_DBU-COMPLETE-sel.csv')
+rprtmerge.to_csv('data/results/db-unification/report_merge_DBU-COMPLETE-sel.csv')
+hmrgcorr.to_csv(('data/results/db-unification/headcorr_DBU-COMPLETE-sel.csv'))
