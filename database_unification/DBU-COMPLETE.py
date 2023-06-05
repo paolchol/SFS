@@ -452,14 +452,24 @@ tool = metamerge['DATA_FINE'].copy()
 metamerge.drop(columns = 'DATA_FINE', inplace = True)
 metamerge.insert(11, 'DATA_FINE', tool)
 
-# - Rename the coordinate columns and merge the info columns
-# metamerge.rename(columns = {'X_WGS84': 'X', 'Y_WGS84': 'Y'}, inplace = True)
+# - Merge the info columns
 dw.join_twocols(metamerge, ['NOTE', 'INFO'], onlyna = False, add = True, inplace = True)
+
+# - Fill in the coordinates
+metamerge['X_GB_new'], metamerge['Y_GB_new'] =  gd.transf_CRS(metamerge.loc[:, 'lat'], metamerge.loc[:, 'lon'], 'EPSG:4326', 'EPSG:3003', series = True)
+metamerge['X_WGS84_new'], metamerge['Y_WGS84_new'] =  gd.transf_CRS(metamerge.loc[:, 'lat'], metamerge.loc[:, 'lon'], 'EPSG:4326', 'EPSG:32632', series = True)
+dw.join_twocols(metamerge, ['X_GB', 'X_GB_new'], inplace = True)
+dw.join_twocols(metamerge, ['Y_GB', 'Y_GB_new'], inplace = True)
+dw.join_twocols(metamerge, ['X_WGS84', 'X_WGS84_new'], inplace = True)
+dw.join_twocols(metamerge, ['Y_WGS84', 'Y_WGS84_new'], inplace = True)
 
 # - Clean headmerge from series not present in metamerge
 test = np.invert(headmerge.columns.isin(metamerge.index))
 headmerge.drop(columns = headmerge.columns[test], inplace = True)
 hmrgcorr.drop(columns = hmrgcorr.columns[test], inplace = True)
+
+# - Clean metamerge non present in time series
+metamerge = metamerge.loc[metamerge.index.isin(hmrgcorr.columns), :]
 
 # - Search and replace added codes in metamerge with existing ones in codes_db
 # -- Add eventual SIF codes not present based on CODICE and CODICE_PP
