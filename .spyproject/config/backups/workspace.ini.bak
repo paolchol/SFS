@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = empty-project-type
-recent_files = ['datawrangling.py', 'database_unification\\DBU-COMPLETE.py', '..\\Users\\paolo\\OneDrive - Politecnico di Milano\\hydrogeo-modelling\\Articoli\\Flowpath23\\code\\merge-db-piezo.py', 'dataanalysis.py', 'geodata.py']
+recent_files = ['analysis_ts\\SGI.py', '..\\Users\\paolo\\OneDrive - Politecnico di Milano\\hydrogeo-modelling\\Articoli\\Flowpath23\\code\\merge-db-piezo.py']
 
 [main]
 version = 0.2.0
